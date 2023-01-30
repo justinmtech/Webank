@@ -1,0 +1,8 @@
+com\justinmtech\webank\service\TransactionService.class
+com\justinmtech\webank\model\Role.class
+com\justinmtech\webank\service\WebankUserDetailsService.class
+com\justinmtech\webank\controller\IndexController.class
+com\justinmtech\webank\config\SecurityConfig.class
+com\justinmtech\webank\controller\SendMoneyController.class
+com\justinmtech\webank\controller\DashboardController.class
+com\justinmtech\webank\repository\TransactionRepository.class
