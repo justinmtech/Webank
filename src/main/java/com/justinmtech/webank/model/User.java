@@ -1,12 +1,13 @@
 package com.justinmtech.webank.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -22,26 +23,25 @@ public class User implements UserDetails {
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private Collection<GrantedAuthority> authorities;
+    private Role role;
     private boolean accountEnabled;
 
     public User() {
-        this.balance = BigDecimal.valueOf(10_000);
-        this.authorities = Collections.singleton(new SimpleGrantedAuthority("USER"));
+        this.balance = BigDecimal.ZERO;
+        this.role = Role.USER;
         this.accountEnabled = true;
     }
 
     public User(String username, String password, BigDecimal balance,
                 String firstName, String lastName, String phoneNumber,
-                Collection<GrantedAuthority> authorities, boolean accountEnabled,
-                List<Transaction> transactions) {
+                Role role, boolean accountEnabled) {
         setUsername(username);
         this.password = password;
         this.balance = balance;
         setFirstName(firstName);
         setLastName(lastName);
         this.phoneNumber = phoneNumber;
-        this.authorities = authorities;
+        this.role = role;
         this.accountEnabled = accountEnabled;
     }
 
@@ -52,7 +52,11 @@ public class User implements UserDetails {
         this.firstName = "n/a";
         this.lastName = "n/a";
         this.phoneNumber = "n/a";
-        this.authorities = Collections.singleton(new SimpleGrantedAuthority("USER"));
+        if (username.equals("admin")) {
+            this.role = Role.ADMIN;
+        } else {
+            this.role = Role.USER;
+        }
         this.accountEnabled = true;
     }
 
@@ -63,7 +67,11 @@ public class User implements UserDetails {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
-        this.authorities = Collections.singleton(new SimpleGrantedAuthority("USER"));
+        if (username.equals("admin")) {
+            this.role = Role.ADMIN;
+        } else {
+            this.role = Role.USER;
+        }
         this.accountEnabled = true;
 
     }
@@ -75,7 +83,7 @@ public class User implements UserDetails {
         this.firstName = "n/a";
         this.lastName = "n/a";
         this.phoneNumber = "n/a";
-        this.authorities = Collections.singleton(new SimpleGrantedAuthority(role.name()));
+        this.role = role;
         this.accountEnabled = true;
     }
 
@@ -86,7 +94,7 @@ public class User implements UserDetails {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.phoneNumber = user.getPhoneNumber();
-        this.authorities = (Collection<GrantedAuthority>) user.getAuthorities();
+        this.role = user.getRole();
         this.accountEnabled = user.isEnabled();
     }
 
@@ -142,6 +150,14 @@ public class User implements UserDetails {
         return accountEnabled;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return this.accountEnabled;
@@ -164,11 +180,11 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities;
-    }
-
-    public void setAuthorities(Collection<GrantedAuthority> authorities) {
-        this.authorities = authorities;
+        if (getRole() == Role.ADMIN) {
+            return Collections.singleton(new SimpleGrantedAuthority(Role.ADMIN.name()));
+        } else {
+            return Collections.singleton(new SimpleGrantedAuthority(Role.USER.name()));
+        }
     }
 
     public void setAccountEnabled(boolean accountEnabled) {

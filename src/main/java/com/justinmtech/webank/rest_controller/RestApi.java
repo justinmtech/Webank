@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 //TODO Setup security/permissions
 @RestController
@@ -23,22 +25,22 @@ public class RestApi {
     private TransactionService transactionService;
 
     @GetMapping("/api/v1/getUser/{username}")
-    public Optional<User> getUser(@PathVariable(name = "username") String username) {
+    public CompletableFuture<Optional<User>> getUser(@PathVariable(name = "username") String username) {
         return getUserService().getUser(username);
     }
 
     @GetMapping("/api/v1/getUsers")
-    public List<User> getUsers() {
+    public CompletableFuture<List<User>> getUsers() {
         return getUserService().getUsers();
     }
 
     @GetMapping("/api/v1/getTransactions")
-    public List<Transaction> getTransactions() {
+    public CompletableFuture<List<Transaction>> getTransactions() {
         return getTransactionService().getAll();
     }
 
     @GetMapping("/api/v1/getTransactions/{username}")
-    public List<Transaction> getTransactions(@PathVariable(value = "username") String username) {
+    public CompletableFuture<List<Transaction>> getTransactions(@PathVariable(value = "username") String username) throws ExecutionException, InterruptedException {
         return getTransactionService().getAllTransactionsByUsername(username);
     }
 

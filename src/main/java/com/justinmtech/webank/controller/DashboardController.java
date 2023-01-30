@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Controller
 public class DashboardController {
@@ -25,9 +27,13 @@ public class DashboardController {
     public String getDashboard(Model model) {
         User user = getUserService().getCurrentAuthenticatedUser();
         model.addAttribute("user", user);
-        List<Transaction> transactionList = getTransactionService().getAllTransactionsByUsername(user.getUsername());
-        model.addAttribute("transactions", transactionList);
-        model.addAttribute("transactionsCount", transactionList.size());
+        try {
+            List<Transaction> transactionList = getTransactionService().getAllTransactionsByUsername(user.getUsername()).join();
+            model.addAttribute("transactions", transactionList);
+            model.addAttribute("transactionsCount", transactionList.size());
+        } catch (ExecutionException | InterruptedException e) {
+            return "error-page";
+        }
 
         return "dashboard";
     }

@@ -19,6 +19,8 @@
                 <td>Username |</td>
                 <td>First Name |</td>
                 <td>Last Name |</td>
+                <td>Phone |</td>
+                <td>Role</td>
                 <td>Balance |</td>
                 <td>Transactions</td>
             </tr>
@@ -26,6 +28,8 @@
                 <td th:text="${user.username}"></td>
                 <td th:text="${user.firstName}"></td>
                 <td th:text="${user.lastName}"></td>
+                <td th:text="${user.phoneNumber}"></td>
+                <td th:text="${user.role}"></td>
                 <td th:text="${user.balance}"></td>
                 <td th:text="${transactionsCount}"></td>
             </tr>

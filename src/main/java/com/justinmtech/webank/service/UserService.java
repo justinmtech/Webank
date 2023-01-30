@@ -2,13 +2,17 @@ package com.justinmtech.webank.service;
 
 import com.justinmtech.webank.model.User;
 import com.justinmtech.webank.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class UserService {
@@ -19,14 +23,19 @@ public class UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public Optional<User> getUser(String username) {
-        return userRepository.findById(username);
+    @Async
+    public CompletableFuture<Optional<User>> getUser(String username) {
+        Optional<User> user = userRepository.findById(username);
+        return CompletableFuture.completedFuture(user);
     }
 
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    @Async
+    public CompletableFuture<List<User>> getUsers() {
+        List<User> users = userRepository.findAll();
+        return CompletableFuture.completedFuture(users);
     }
 
+    @Async
     public void deleteUser(String username) throws Exception {
         if (userRepository.findById(username).isPresent()) {
             userRepository.deleteById(username);
@@ -35,25 +44,34 @@ public class UserService {
         }
     }
 
-    public User createUser(String username, String password) throws Exception {
+    @SuppressWarnings("UnusedReturnValue")
+    @Async
+    public CompletableFuture<User> createUser(String username, String password) throws Exception {
         if (userRepository.findById(username).isEmpty()) {
-            return userRepository.save(new User(username, getPasswordEncoder().encode(password)));
+            User user = userRepository.save(new User(username, getPasswordEncoder().encode(password)));
+            return CompletableFuture.completedFuture(user);
         } else {
             throw new Exception("User already exists");
         }
     }
 
-    public User createUser(String username, String password, String firstName, String lastName, String phoneNumber) throws Exception {
+    @SuppressWarnings("UnusedReturnValue")
+    @Async
+    public CompletableFuture<User> createUser(String username, String password, String firstName, String lastName, String phoneNumber) throws Exception {
         if (userRepository.findById(username).isEmpty()) {
-            return userRepository.save(new User(username, getPasswordEncoder().encode(password), firstName, lastName, phoneNumber));
+            User user = userRepository.save(new User(username, getPasswordEncoder().encode(password), firstName, lastName, phoneNumber));
+            return CompletableFuture.completedFuture(user);
         } else {
             throw new Exception("User already exists");
         }
     }
 
-    public User updateUser(User user) throws Exception {
+    @SuppressWarnings("UnusedReturnValue")
+    @Async
+    public CompletableFuture<User> updateUser(User user) throws Exception {
         if (userRepository.findById(user.getUsername()).isPresent()) {
-            return userRepository.save(user);
+            User updatedUser = userRepository.save(user);
+            return CompletableFuture.completedFuture(updatedUser);
         } else {
             throw new Exception("User not found");
         }
@@ -66,7 +84,7 @@ public class UserService {
     public User getCurrentAuthenticatedUser() {
         try {
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            Optional<User> user = getUser(username);
+            Optional<User> user = getUser(username).join();
             return user.orElse(null);
         } catch (Exception e) {
             e.printStackTrace();

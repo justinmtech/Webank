@@ -5,12 +5,15 @@ import com.justinmtech.webank.model.User;
 import com.justinmtech.webank.repository.TransactionRepository;
 import com.justinmtech.webank.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class TransactionService {
@@ -21,44 +24,51 @@ public class TransactionService {
     @Autowired
     UserService userService;
 
-    @Autowired
-    UserRepository userRepository;
-
-    public Optional<Transaction> getTransactionById(Long id) {
-        return getTransactionRepository().findById(id);
+    @Async
+    public CompletableFuture<Optional<Transaction>> getTransactionById(Long id) {
+        return CompletableFuture.completedFuture(getTransactionRepository().findById(id));
     }
 
-    public List<Transaction> getAll() {
-        return getTransactionRepository().findAll();
+    @Async
+    public CompletableFuture<List<Transaction>> getAll() {
+        List<Transaction> transactions = getTransactionRepository().findAll();
+        return CompletableFuture.completedFuture(transactions);
     }
 
-    public List<Transaction> getTransactionsBySender(String username) {
-        return getTransactionRepository().findBySender(username);
+    @Async
+    public CompletableFuture<List<Transaction>> getTransactionsBySender(String username) {
+        List<Transaction> transactions = getTransactionRepository().findBySender(username);
+        return CompletableFuture.completedFuture(transactions);
     }
 
-    public List<Transaction> getTransactionsByReceiver(String username) {
-        return getTransactionRepository().findByReceiver(username);
+    @Async
+    public CompletableFuture<List<Transaction>> getTransactionsByReceiver(String username) {
+        List<Transaction> transactions = getTransactionRepository().findByReceiver(username);
+        return CompletableFuture.completedFuture(transactions);
     }
 
-    public List<Transaction> getAllTransactionsByUsername(String username) {
+    @Async
+    public CompletableFuture<List<Transaction>> getAllTransactionsByUsername(String username) throws ExecutionException, InterruptedException {
         List<Transaction> transactions = new ArrayList<>();
-        transactions.addAll(getTransactionsBySender(username));
-        transactions.addAll(getTransactionsByReceiver(username));
-        return transactions;
+        transactions.addAll(getTransactionsBySender(username).get());
+        transactions.addAll(getTransactionsByReceiver(username).get());
+        return CompletableFuture.completedFuture(transactions);
     }
 
+
+    @Async
     private void createNewTransaction(String from, String to, BigDecimal amount) throws Exception {
         Transaction transaction = new Transaction(from, to, amount);
         if (!getUserService().userExists(from)) throw new Exception("The sender does not exist: " + from);
         if (!getUserService().userExists(to)) throw new Exception("The receiver does not exist: " + to);
-        transactionRepository.save(transaction);
+        getTransactionRepository().save(transaction);
     }
 
     public void handleTransaction(Transaction transaction) throws Exception {
         if (userHasEnoughFunds(transaction.getSender(), transaction.getAmount())) {
             if (getUserService().userExists(transaction.getReceiver())) {
-                Optional<User> sender = getUserService().getUser(transaction.getSender());
-                Optional<User> receiver = getUserService().getUser(transaction.getReceiver());
+                Optional<User> sender = getUserService().getUser(transaction.getSender()).join();
+                Optional<User> receiver = getUserService().getUser(transaction.getReceiver()).join();
 
                 if (sender.isPresent() && receiver.isPresent()) {
                     BigDecimal newSenderBalance = sender.get().getBalance().subtract(transaction.getAmount());
@@ -80,7 +90,7 @@ public class TransactionService {
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     private void setBalance(String username, BigDecimal amount) throws Exception {
         if (getUserService().userExists(username)) {
-            User user = getUserService().getUser(username).get();
+            User user = getUserService().getUser(username).join().get();
             user.setBalance(amount);
             if (user.getBalance().equals(amount)) {
                 getUserService().updateUser(user);
@@ -95,7 +105,7 @@ public class TransactionService {
     private boolean userHasEnoughFunds(String username, BigDecimal transactionAmount) throws Exception {
         if (username == null) return false;
         if (transactionAmount == null) return false;
-        Optional<User> user = getUserService().getUser(username);
+        Optional<User> user = getUserService().getUser(username).join();
         if (user.isPresent()) {
             BigDecimal currentBalance = user.get().getBalance();
             int comparison = currentBalance.compareTo(transactionAmount);
