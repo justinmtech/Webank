@@ -29,7 +29,7 @@ public class SendMoneyController {
     @PostMapping("/send-money")
     public String sendMoney(@ModelAttribute Transaction transaction, Model model) {
         model.addAttribute("transaction", transaction);
-        transaction.setSender(getUserService().getCurrentAuthenticatedUser());
+        transaction.setSender(getUserService().getCurrentAuthenticatedUser().getUsername());
         try {
             getTransactionService().handleTransaction(transaction);
             return "money-sent";

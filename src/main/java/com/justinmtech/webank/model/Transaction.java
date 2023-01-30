@@ -12,19 +12,17 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @OneToOne (cascade = CascadeType.ALL)
-    @JoinColumn(name = "sender_username", referencedColumnName = "username")
-    private User sender;
-    @OneToOne (cascade = CascadeType.ALL)
-    @JoinColumn(name = "receiver_username", referencedColumnName = "username")
-    private User receiver;
+    @Column(name = "sender_username")
+    private String sender;
+    @Column(name = "receiver_username")
+    private String receiver;
     private BigDecimal amount;
     private Date time;
 
     public Transaction() {
     }
 
-    public Transaction(Long id, User sender, User receiver, BigDecimal amount, Date time) {
+    public Transaction(Long id, String sender, String receiver, BigDecimal amount, Date time) {
         this.id = id;
         this.sender = sender;
         this.receiver = receiver;
@@ -32,7 +30,7 @@ public class Transaction {
         this.time = time;
     }
 
-    public Transaction(User sender, User receiver, BigDecimal amount) {
+    public Transaction(String sender, String receiver, BigDecimal amount) {
         this.sender = sender;
         this.receiver = receiver;
         this.amount = amount;
@@ -47,19 +45,19 @@ public class Transaction {
         this.id = id;
     }
 
-    public User getSender() {
+    public String getSender() {
         return sender;
     }
 
-    public void setSender(User sender) {
+    public void setSender(String sender) {
         this.sender = sender;
     }
 
-    public User getReceiver() {
+    public String getReceiver() {
         return receiver;
     }
 
-    public void setReceiver(User receiver) {
+    public void setReceiver(String receiver) {
         this.receiver = receiver;
     }
 

@@ -5,33 +5,29 @@
     <title>Dashboard</title>
 </head>
 <body>
+    <nav>
+        <a href="http://localhost:2053/">Home</a>
+        <a href="http://localhost:2053/dashboard">Dashboard</a>
+        <a href="http://localhost:2053/send-money">Send Money</a>
+    </nav>
+
     <h1>Dashboard</h1>
 
     <div id="user-dashboard">
-        <ul>
-            <li><p>Username: <strong th:text="${user.username}"></strong></p></li>
-            <li><p>Balance: <strong th:text="${user.balance}"></strong></p></li>
-            <li><p>First name: <strong th:text="${user.firstName}"></strong></p></li>
-            <li><p>Last name: <strong th:text="${user.lastName}"></strong></p></li>
-        </ul>
-    </div>
-
-    <div id="received-transactions">
-        <h2>Transactions</h2>
         <table>
             <tr>
-                <td>Transaction ID</td>
-                <td>Sender Username</td>
-                <td>Receiver Username</td>
-                <td>Amount</td>
-                <td>Time</td>
+                <td>Username |</td>
+                <td>First Name |</td>
+                <td>Last Name |</td>
+                <td>Balance |</td>
+                <td>Transactions</td>
             </tr>
-            <tr th:each="transaction: ${user.transactions}">
-                <td th:text="${transaction.id}"></td>
-                <td th:text="${transaction.sender}"></td>
-                <td th:text="${transaction.receiver}"></td>
-                <td th:text="${transaction.amount}"></td>
-                <td th:text="${transaction.time}"></td>
+            <tr>
+                <td th:text="${user.username}"></td>
+                <td th:text="${user.firstName}"></td>
+                <td th:text="${user.lastName}"></td>
+                <td th:text="${user.balance}"></td>
+                <td th:text="${transactionsCount}"></td>
             </tr>
         </table>
     </div>
@@ -40,10 +36,10 @@
         <h2>Transactions</h2>
         <table>
             <tr>
-                <td>Transaction ID</td>
-                <td>Sender Username</td>
-                <td>Receiver Username</td>
-                <td>Amount</td>
+                <td>Transaction ID |</td>
+                <td>Sender |</td>
+                <td>Receiver |</td>
+                <td>Amount |</td>
                 <td>Time</td>
             </tr>
             <tr th:each="transaction: ${transactions}">

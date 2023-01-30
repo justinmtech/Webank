@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,24 +28,39 @@ public class TransactionService {
         return getTransactionRepository().findById(id);
     }
 
-    private void createNewTransaction(User from, User to, BigDecimal amount) throws Exception {
+    public List<Transaction> getTransactionsBySender(String username) {
+        return getTransactionRepository().findBySender(username);
+    }
+
+    public List<Transaction> getTransactionsByReceiver(String username) {
+        return getTransactionRepository().findByReceiver(username);
+    }
+
+    public List<Transaction> getAllTransactionsByUsername(String username) {
+        List<Transaction> transactions = new ArrayList<>();
+        transactions.addAll(getTransactionsBySender(username));
+        transactions.addAll(getTransactionsByReceiver(username));
+        return transactions;
+    }
+
+    private void createNewTransaction(String from, String to, BigDecimal amount) throws Exception {
         Transaction transaction = new Transaction(from, to, amount);
-        if (!getUserService().userExists(from.getUsername())) throw new Exception("The sender does not exist: " + from);
-        if (!getUserService().userExists(to.getUsername())) throw new Exception("The receiver does not exist: " + to);
+        if (!getUserService().userExists(from)) throw new Exception("The sender does not exist: " + from);
+        if (!getUserService().userExists(to)) throw new Exception("The receiver does not exist: " + to);
         transactionRepository.save(transaction);
     }
 
     public void handleTransaction(Transaction transaction) throws Exception {
-        if (userHasEnoughFunds(transaction.getSender().getUsername(), transaction.getAmount())) {
-            if (getUserService().userExists(transaction.getReceiver().getUsername())) {
-                Optional<User> sender = getUserService().getUser(transaction.getSender().getUsername());
-                Optional<User> receiver = getUserService().getUser(transaction.getReceiver().getUsername());
+        if (userHasEnoughFunds(transaction.getSender(), transaction.getAmount())) {
+            if (getUserService().userExists(transaction.getReceiver())) {
+                Optional<User> sender = getUserService().getUser(transaction.getSender());
+                Optional<User> receiver = getUserService().getUser(transaction.getReceiver());
 
                 if (sender.isPresent() && receiver.isPresent()) {
                     BigDecimal newSenderBalance = sender.get().getBalance().subtract(transaction.getAmount());
                     BigDecimal newReceiverBalance = receiver.get().getBalance().add(transaction.getAmount());
-                    setBalance(transaction.getSender().getUsername(), newSenderBalance);
-                    setBalance(transaction.getReceiver().getUsername(), newReceiverBalance);
+                    setBalance(transaction.getSender(), newSenderBalance);
+                    setBalance(transaction.getReceiver(), newReceiverBalance);
                     createNewTransaction(transaction.getSender(), transaction.getReceiver(), transaction.getAmount());
                 } else {
                     throw new Exception("Sender or receiver not found.");
@@ -56,6 +73,7 @@ public class TransactionService {
         }
     }
 
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
     private void setBalance(String username, BigDecimal amount) throws Exception {
         if (getUserService().userExists(username)) {
             User user = getUserService().getUser(username).get();

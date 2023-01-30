@@ -1,11 +1,16 @@
 package com.justinmtech.webank.controller;
 
+import com.justinmtech.webank.model.Transaction;
+import com.justinmtech.webank.model.User;
 import com.justinmtech.webank.repository.TransactionRepository;
+import com.justinmtech.webank.service.TransactionService;
 import com.justinmtech.webank.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 public class DashboardController {
@@ -14,17 +19,24 @@ public class DashboardController {
     private UserService userService;
 
     @Autowired
-    TransactionRepository transactionRepository;
+    TransactionService transactionService;
 
     @RequestMapping("/dashboard")
     public String getDashboard(Model model) {
+        User user = getUserService().getCurrentAuthenticatedUser();
+        model.addAttribute("user", user);
+        List<Transaction> transactionList = getTransactionService().getAllTransactionsByUsername(user.getUsername());
+        model.addAttribute("transactions", transactionList);
+        model.addAttribute("transactionsCount", transactionList.size());
 
-        model.addAttribute("user", getUserService().getCurrentAuthenticatedUser());
-        model.addAttribute("transactions", transactionRepository.findAll());
         return "dashboard";
     }
 
     public UserService getUserService() {
         return userService;
+    }
+
+    public TransactionService getTransactionService() {
+        return transactionService;
     }
 }

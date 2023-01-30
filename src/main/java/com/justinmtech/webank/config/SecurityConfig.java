@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests().requestMatchers("/admin", "/admin/**", "/admin/user/**", "/admin/user/update/**").hasAuthority("ADMIN")
                 .and()
-                .formLogin()
+                .formLogin().defaultSuccessUrl("/dashboard.html")
                 .and().build();
     }
 

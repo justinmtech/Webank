@@ -19,14 +19,6 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private BigDecimal balance;
-    @ManyToMany (cascade = CascadeType.ALL)
-    @JoinColumns(
-            {
-                    @JoinColumn(name = "username", referencedColumnName = "sender_username"),
-                    @JoinColumn(name = "username", referencedColumnName = "receiver_username")
-            }
-    )
-    List<Transaction> transactions;
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -37,7 +29,6 @@ public class User implements UserDetails {
         this.balance = BigDecimal.valueOf(10_000);
         this.authorities = Collections.singleton(new SimpleGrantedAuthority("USER"));
         this.accountEnabled = true;
-        this.transactions = new ArrayList<>();
     }
 
     public User(String username, String password, BigDecimal balance,
@@ -52,7 +43,6 @@ public class User implements UserDetails {
         this.phoneNumber = phoneNumber;
         this.authorities = authorities;
         this.accountEnabled = accountEnabled;
-        this.transactions = transactions;
     }
 
     public User(String username, String password) {
@@ -64,7 +54,6 @@ public class User implements UserDetails {
         this.phoneNumber = "n/a";
         this.authorities = Collections.singleton(new SimpleGrantedAuthority("USER"));
         this.accountEnabled = true;
-        this.transactions = new ArrayList<>();
     }
 
     public User(String username, String password, String firstName, String lastName, String phoneNumber) {
@@ -76,8 +65,6 @@ public class User implements UserDetails {
         this.phoneNumber = phoneNumber;
         this.authorities = Collections.singleton(new SimpleGrantedAuthority("USER"));
         this.accountEnabled = true;
-        this.transactions = new ArrayList<>();
-        this.transactions.add(new Transaction(this, this, BigDecimal.TEN));
 
     }
 
@@ -101,26 +88,6 @@ public class User implements UserDetails {
         this.phoneNumber = user.getPhoneNumber();
         this.authorities = (Collection<GrantedAuthority>) user.getAuthorities();
         this.accountEnabled = user.isEnabled();
-    }
-
-    public List<Transaction> getReceivedTransactions() {
-        List<Transaction> receivedTransactions = new ArrayList<>();
-        for (Transaction transaction : getTransactions()) {
-            if (transaction.getReceiver().equals(this.username)) {
-                receivedTransactions.add(transaction);
-            }
-        }
-        return receivedTransactions;
-    }
-
-    public List<Transaction> getSentTransactions() {
-        List<Transaction> sentTransactions = new ArrayList<>();
-        for (Transaction transaction : getTransactions()) {
-            if (transaction.getSender().equals(this.username)) {
-                sentTransactions.add(transaction);
-            }
-        }
-        return sentTransactions;
     }
 
     public String getUsername() {
@@ -169,14 +136,6 @@ public class User implements UserDetails {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber.trim();
-    }
-
-    public List<Transaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
     }
 
     public boolean isAccountEnabled() {

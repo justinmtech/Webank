@@ -6,6 +6,12 @@
 </head>
 <body>
 
+    <nav>
+        <a href="http://localhost:2053/">Home</a>
+        <a href="http://localhost:2053/dashboard">Dashboard</a>
+        <a href="http://localhost:2053/send-money">Send Money</a>
+    </nav>
+
     <h1>Send Money</h1>
 
     <div id="send-money-form">
@@ -13,7 +19,7 @@
         <form action="#" th:action="@{/send-money}" method="post" th:object="${transaction}">
             <p>Username: <input type="text" th:field="*{receiver}"></p>
             <p>Amount: <input type="text" th:field="*{amount}"></p>
-            <button type="submit">Create Account</button>
+            <button type="submit">Send</button>
         </form>
     </div>
 
