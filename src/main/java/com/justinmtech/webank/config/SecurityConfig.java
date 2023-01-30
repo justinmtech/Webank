@@ -37,9 +37,8 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests().requestMatchers("/dashboard", "/send-money", "/money-sent").authenticated()
                 .and()
-                .authorizeHttpRequests().requestMatchers("/admin", "/admin/**", "/admin/user/**", "/admin/user/update/**").hasAuthority("ADMIN")
-                .and()
-                .formLogin().defaultSuccessUrl("/dashboard.html")
+                .formLogin().defaultSuccessUrl("/dashboard")
+                .and().logout().logoutSuccessUrl("/")
                 .and().build();
     }
 

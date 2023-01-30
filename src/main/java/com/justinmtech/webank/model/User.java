@@ -63,7 +63,7 @@ public class User implements UserDetails {
     public User(String username, String password, String firstName, String lastName, String phoneNumber) {
         setUsername(username);
         this.password = password;
-        this.balance = BigDecimal.valueOf(10_000);
+        this.balance = BigDecimal.ZERO;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;

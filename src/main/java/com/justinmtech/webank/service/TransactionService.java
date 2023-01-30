@@ -1,9 +1,13 @@
 package com.justinmtech.webank.service;
 
+import com.justinmtech.webank.exceptions.transaction.BalanceNotUpdatedError;
+import com.justinmtech.webank.exceptions.transaction.InsufficientFundsError;
+import com.justinmtech.webank.exceptions.transaction.TransactionAccountNotFound;
+import com.justinmtech.webank.exceptions.transaction.TransactionMember;
+import com.justinmtech.webank.exceptions.user.UserNotFoundError;
 import com.justinmtech.webank.model.Transaction;
 import com.justinmtech.webank.model.User;
 import com.justinmtech.webank.repository.TransactionRepository;
-import com.justinmtech.webank.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -56,53 +60,79 @@ public class TransactionService {
     }
 
 
+    @SuppressWarnings("UnusedReturnValue")
     @Async
-    private void createNewTransaction(String from, String to, BigDecimal amount) throws Exception {
+    private CompletableFuture<Transaction> createNewTransaction(String from, String to, BigDecimal amount) throws TransactionAccountNotFound {
         Transaction transaction = new Transaction(from, to, amount);
-        if (!getUserService().userExists(from)) throw new Exception("The sender does not exist: " + from);
-        if (!getUserService().userExists(to)) throw new Exception("The receiver does not exist: " + to);
-        getTransactionRepository().save(transaction);
+        if (!getUserService().userExists(from)) throw new TransactionAccountNotFound(TransactionMember.SENDER, from);
+        if (!getUserService().userExists(to)) throw new TransactionAccountNotFound(TransactionMember.RECEIVER, to);
+        Transaction transactionSaved = getTransactionRepository().save(transaction);
+        return CompletableFuture.completedFuture(transactionSaved);
     }
 
-    public void handleTransaction(Transaction transaction) throws Exception {
-        if (userHasEnoughFunds(transaction.getSender(), transaction.getAmount())) {
-            if (getUserService().userExists(transaction.getReceiver())) {
-                Optional<User> sender = getUserService().getUser(transaction.getSender()).join();
-                Optional<User> receiver = getUserService().getUser(transaction.getReceiver()).join();
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean handleTransaction(Transaction transaction) throws Exception {
+        String receiverUsername = transaction.getReceiver();
+        String senderUsername = transaction.getSender();
 
-                if (sender.isPresent() && receiver.isPresent()) {
-                    BigDecimal newSenderBalance = sender.get().getBalance().subtract(transaction.getAmount());
-                    BigDecimal newReceiverBalance = receiver.get().getBalance().add(transaction.getAmount());
-                    setBalance(transaction.getSender(), newSenderBalance);
-                    setBalance(transaction.getReceiver(), newReceiverBalance);
-                    createNewTransaction(transaction.getSender(), transaction.getReceiver(), transaction.getAmount());
-                } else {
-                    throw new Exception("Sender or receiver not found.");
-                }
-            } else {
-                throw new Exception("Sender does not exist");
-            }
+        if (userDoesNotExist(receiverUsername)) {
+            throw new UserNotFoundError(receiverUsername);
+        }
+        if (userDoesNotExist(senderUsername)) {
+            throw new UserNotFoundError(senderUsername);
+        }
+        if (insufficientFunds(transaction)) {
+            throw new InsufficientFundsError(TransactionMember.SENDER, transaction.getSender());
+        }
+
+        BigDecimal previousSenderBalance = getUserService().getUserBalance(senderUsername);
+        BigDecimal newSenderBalance = previousSenderBalance.subtract(transaction.getAmount());
+        boolean senderBalanceUpdateSuccess = handleBalanceUpdate(senderUsername, newSenderBalance);
+
+        BigDecimal previousReceiverBalance = getUserService().getUserBalance(receiverUsername);
+        BigDecimal newReceiverBalance = previousReceiverBalance.add(transaction.getAmount());
+        boolean receiverBalanceUpdateSuccess = handleBalanceUpdate(receiverUsername, newReceiverBalance);
+
+        //Revert balances if failure
+        if (!senderBalanceUpdateSuccess || !receiverBalanceUpdateSuccess) {
+            handleBalanceUpdate(senderUsername, previousSenderBalance);
+            handleBalanceUpdate(receiverUsername, previousReceiverBalance);
+            return false;
         } else {
-            throw new Exception("Sender does not have enough funds.");
+            createNewTransaction(transaction.getSender(), transaction.getReceiver(), transaction.getAmount());
+            return true;
         }
     }
 
+    private boolean handleBalanceUpdate(String username, BigDecimal newBalance) throws BalanceNotUpdatedError, UserNotFoundError {
+        return setBalance(username, newBalance);
+    }
+
+    private boolean userDoesNotExist(String username) {
+        return !getUserService().userExists(username);
+    }
+
+    private boolean insufficientFunds(Transaction transaction) throws UserNotFoundError {
+        return !userHasEnoughFunds(transaction.getSender(), transaction.getAmount());
+    }
+
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    private void setBalance(String username, BigDecimal amount) throws Exception {
+    private boolean setBalance(String username, BigDecimal amount) throws UserNotFoundError, BalanceNotUpdatedError {
         if (getUserService().userExists(username)) {
             User user = getUserService().getUser(username).join().get();
             user.setBalance(amount);
             if (user.getBalance().equals(amount)) {
                 getUserService().updateUser(user);
+                return true;
             } else {
-                throw new Exception("The balance could not be updated");
+                throw new BalanceNotUpdatedError(username);
             }
         } else {
-            throw new Exception("User not found: " + username);
+            throw new UserNotFoundError(username);
         }
     }
 
-    private boolean userHasEnoughFunds(String username, BigDecimal transactionAmount) throws Exception {
+    private boolean userHasEnoughFunds(String username, BigDecimal transactionAmount) throws UserNotFoundError {
         if (username == null) return false;
         if (transactionAmount == null) return false;
         Optional<User> user = getUserService().getUser(username).join();
@@ -111,7 +141,7 @@ public class TransactionService {
             int comparison = currentBalance.compareTo(transactionAmount);
             return comparison >= 0;
         } else {
-            throw new Exception("That user could not be found");
+            throw new UserNotFoundError(username);
         }
     }
 

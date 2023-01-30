@@ -1,15 +1,16 @@
 package com.justinmtech.webank.service;
 
+import com.justinmtech.webank.exceptions.user.UserAlreadyExistsError;
+import com.justinmtech.webank.exceptions.user.UserNotFoundError;
 import com.justinmtech.webank.model.User;
 import com.justinmtech.webank.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -29,51 +30,60 @@ public class UserService {
         return CompletableFuture.completedFuture(user);
     }
 
+    public BigDecimal getUserBalance(String username) throws UserNotFoundError {
+        Optional<User> user = userRepository.findById(username);
+        if (user.isEmpty()) throw new UserNotFoundError(username);
+        return user.get().getBalance();
+    }
+
     @Async
     public CompletableFuture<List<User>> getUsers() {
         List<User> users = userRepository.findAll();
         return CompletableFuture.completedFuture(users);
     }
 
+    @SuppressWarnings("unused")
     @Async
-    public void deleteUser(String username) throws Exception {
+    public void deleteUser(String username) throws UserNotFoundError {
         if (userRepository.findById(username).isPresent()) {
             userRepository.deleteById(username);
         } else {
-            throw new Exception("User does not exist");
+            throw new UserNotFoundError(username);
         }
     }
 
     @SuppressWarnings("UnusedReturnValue")
     @Async
-    public CompletableFuture<User> createUser(String username, String password) throws Exception {
+    public CompletableFuture<User> createUser(String username, String password) throws UserAlreadyExistsError {
         if (userRepository.findById(username).isEmpty()) {
             User user = userRepository.save(new User(username, getPasswordEncoder().encode(password)));
             return CompletableFuture.completedFuture(user);
         } else {
-            throw new Exception("User already exists");
+            throw new UserAlreadyExistsError();
         }
     }
 
     @SuppressWarnings("UnusedReturnValue")
     @Async
-    public CompletableFuture<User> createUser(String username, String password, String firstName, String lastName, String phoneNumber) throws Exception {
+    public CompletableFuture<User> createUser(String username, String password, String firstName, String lastName, String phoneNumber) throws UserAlreadyExistsError {
         if (userRepository.findById(username).isEmpty()) {
-            User user = userRepository.save(new User(username, getPasswordEncoder().encode(password), firstName, lastName, phoneNumber));
+            User user = new User(username, getPasswordEncoder().encode(password), firstName, lastName, phoneNumber);
+            user.setBalance(BigDecimal.valueOf(100));
+            userRepository.save(user);
             return CompletableFuture.completedFuture(user);
         } else {
-            throw new Exception("User already exists");
+            throw new UserAlreadyExistsError();
         }
     }
 
     @SuppressWarnings("UnusedReturnValue")
     @Async
-    public CompletableFuture<User> updateUser(User user) throws Exception {
+    public CompletableFuture<User> updateUser(User user) throws UserNotFoundError {
         if (userRepository.findById(user.getUsername()).isPresent()) {
             User updatedUser = userRepository.save(user);
             return CompletableFuture.completedFuture(updatedUser);
         } else {
-            throw new Exception("User not found");
+            throw new UserNotFoundError(user.getUsername());
         }
     }
 

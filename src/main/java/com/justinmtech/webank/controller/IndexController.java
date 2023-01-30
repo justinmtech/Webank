@@ -47,7 +47,7 @@ public class IndexController {
         model.addAttribute("user", user);
         try {
             getUserService().createUser(user.getUsername(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getPhoneNumber());
-            return "dashboard";
+            return "index";
         } catch (Exception e) {
             return "error-page";
         }
