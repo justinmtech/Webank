@@ -28,6 +28,10 @@ public class TransactionService {
         return getTransactionRepository().findById(id);
     }
 
+    public List<Transaction> getAll() {
+        return getTransactionRepository().findAll();
+    }
+
     public List<Transaction> getTransactionsBySender(String username) {
         return getTransactionRepository().findBySender(username);
     }
