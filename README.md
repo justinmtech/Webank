@@ -6,7 +6,7 @@ Features:
 - Email validation
 - Send and receive (fake) money to other users
 - Dashboard for viewing your account, balance and recent transactions
-- Asynchronous calls
+- Asynchronous database calls
 - Load testing
 - MVC testing
 - Repository testing
