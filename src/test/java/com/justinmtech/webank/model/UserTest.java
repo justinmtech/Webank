@@ -1,12 +1,12 @@
 package com.justinmtech.webank.model;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserTest {
     private static User user;
 
@@ -16,6 +16,7 @@ class UserTest {
     }
 
     @Test
+    @Order(1)
     void testConstructor() {
         User user = new User("test_acc  ", "%$(@$*@)(*@)(*C*CCCCj   a s JDJFD A X(X(");
         assertEquals("test_acc", user.getUsername());
@@ -27,12 +28,14 @@ class UserTest {
     }
 
     @Test
+    @Order(2)
     void getUsername() {
         user.setUsername("test_account");
         assertEquals("test_account", user.getUsername());
     }
 
     @Test
+    @Order(3)
     void setUsername() {
         user.setUsername("new_username");
         assertEquals("new_username", user.getUsername());
@@ -41,18 +44,21 @@ class UserTest {
     }
 
     @Test
+    @Order(4)
     void getPassword() {
         user.setPassword("password");
         assertEquals("password", user.getPassword());
     }
 
     @Test
+    @Order(5)
     void setPassword() {
         user.setPassword("new_password_____");
         assertEquals("new_password_____", user.getPassword());
     }
 
     @Test
+    @Order(6)
     void getBalance() {
         user.setBalance(BigDecimal.ZERO);
         BigDecimal balance = user.getBalance();
@@ -60,6 +66,7 @@ class UserTest {
     }
 
     @Test
+    @Order(7)
     void setBalance() {
         user.setBalance(BigDecimal.TEN);
         assertEquals(BigDecimal.TEN, user.getBalance());
@@ -73,15 +80,19 @@ class UserTest {
         assertEquals(BigDecimal.valueOf(25_037), user.getBalance());
         user.setBalance(BigDecimal.valueOf(10_000));
         assertEquals(BigDecimal.valueOf(10_000), user.getBalance());
+        user.setBalance(BigDecimal.valueOf(1.01010109));
+        assertEquals(BigDecimal.valueOf(1.01010109), user.getBalance());
     }
 
     @Test
+    @Order(8)
     void getFirstName() {
         user.setFirstName("n/a");
         assertEquals("n/a", user.getFirstName());
     }
 
     @Test
+    @Order(9)
     void setFirstName() {
         user.setFirstName("Justin");
         assertEquals("Justin", user.getFirstName());
@@ -96,12 +107,14 @@ class UserTest {
     }
 
     @Test
+    @Order(10)
     void getLastName() {
         user.setLastName("n/a");
         assertEquals("n/a", user.getLastName());
     }
 
     @Test
+    @Order(11)
     void setLastName() {
         user.setLastName("Mitchell");
         assertEquals("Mitchell", user.getLastName());
@@ -114,12 +127,14 @@ class UserTest {
     }
 
     @Test
+    @Order(12)
     void getPhoneNumber() {
         user.setPhoneNumber("n/a");
         assertEquals("n/a", user.getPhoneNumber());
     }
 
     @Test
+    @Order(13)
     void setPhoneNumber() {
         user.setPhoneNumber("601-111-0101");
         assertEquals("601-111-0101", user.getPhoneNumber());

@@ -1,24 +1,31 @@
-package com.justinmtech.webank.registration.token;
+package com.justinmtech.webank.service;
 
+import com.justinmtech.webank.model.ConfirmationToken;
+import com.justinmtech.webank.repository.ConfirmationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@SuppressWarnings("UnusedReturnValue")
 @Service
 public class ConfirmationTokenService {
 
     @Autowired
     private ConfirmationTokenRepository confirmationTokenRepository;
 
+    @Transactional
     public ConfirmationToken saveConfirmationToken(ConfirmationToken confirmationToken) {
         return getConfirmationTokenRepository().save(confirmationToken);
     }
 
+    @Transactional
     public Optional<ConfirmationToken> getToken(String token) {
         return getConfirmationTokenRepository().findByToken(token);
     }
 
+    @Transactional
     public Optional<ConfirmationToken> deleteToken(String token) {
         return getConfirmationTokenRepository().deleteByToken(token);
     }

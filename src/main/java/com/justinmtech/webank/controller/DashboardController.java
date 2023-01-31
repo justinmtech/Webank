@@ -2,7 +2,6 @@ package com.justinmtech.webank.controller;
 
 import com.justinmtech.webank.model.Transaction;
 import com.justinmtech.webank.model.User;
-import com.justinmtech.webank.repository.TransactionRepository;
 import com.justinmtech.webank.service.TransactionService;
 import com.justinmtech.webank.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @Controller

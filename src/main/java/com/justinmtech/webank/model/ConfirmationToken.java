@@ -1,4 +1,4 @@
-package com.justinmtech.webank.registration.token;
+package com.justinmtech.webank.model;
 
 import com.justinmtech.webank.model.User;
 import jakarta.persistence.*;

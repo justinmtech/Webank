@@ -1,7 +1,10 @@
 package com.justinmtech.webank.repository;
 
 import com.justinmtech.webank.model.User;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,20 +17,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
 
     @Test
+    @Order(1)
     void addUser() {
         User user = new User("test", "pass");
-        assertEquals(0, userRepository.findAll().size());
         userRepository.save(user);
-        assertEquals(1, userRepository.findAll().size());
+        assertTrue(userRepository.findById("test").isPresent());
     }
 
     @Test
+    @Order(2)
     void getUser() {
         User user = new User("bobhasalongemail@gmail.com", "p41340981324222");
         userRepository.save(user);
@@ -36,6 +41,7 @@ class UserRepositoryTest {
     }
 
     @Test
+    @Order(3)
     void deleteUser() {
         User user = new User("jamm", "!!!as ad f d a as dd f  d fd a");
         userRepository.save(user);
@@ -48,6 +54,7 @@ class UserRepositoryTest {
     }
 
     @Test
+    @Order(4)
     void updateUser() {
         User user = new User("updateme", "!!!as ad f d a as dd f  d fd a");
         userRepository.save(user);

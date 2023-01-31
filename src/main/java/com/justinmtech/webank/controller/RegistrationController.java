@@ -1,24 +1,22 @@
 package com.justinmtech.webank.controller;
 
 import com.justinmtech.webank.email.EmailService;
-import com.justinmtech.webank.exceptions.user.UserNotFoundError;
-import com.justinmtech.webank.model.Transaction;
 import com.justinmtech.webank.model.User;
-import com.justinmtech.webank.registration.token.ConfirmationToken;
-import com.justinmtech.webank.registration.token.ConfirmationTokenService;
+import com.justinmtech.webank.model.ConfirmationToken;
+import com.justinmtech.webank.service.ConfirmationTokenService;
 import com.justinmtech.webank.service.TransactionService;
 import com.justinmtech.webank.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @Controller
 public class RegistrationController {
@@ -35,7 +33,6 @@ public class RegistrationController {
     @Autowired
     private EmailService emailService;
 
-    //TODO move to registration controller
     @PostMapping("/register")
     public String registerUserAndSendConfirmationEmail(@ModelAttribute User user, Model model) {
         model.addAttribute("user", user);

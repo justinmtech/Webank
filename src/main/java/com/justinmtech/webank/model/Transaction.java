@@ -12,11 +12,12 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(name = "sender_username")
+    @Column(name = "sender_username", nullable = false)
     private String sender;
-    @Column(name = "receiver_username")
+    @Column(name = "receiver_username", nullable = false)
     private String receiver;
     private BigDecimal amount;
+    @Column(nullable = false)
     private Date time;
 
     public Transaction() {

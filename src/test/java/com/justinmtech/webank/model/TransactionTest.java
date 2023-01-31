@@ -1,13 +1,13 @@
 package com.justinmtech.webank.model;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TransactionTest {
     private static Transaction transaction;
     private static String sender;
@@ -19,10 +19,11 @@ class TransactionTest {
         sender = "justin.mitchell@gmail.com";
         receiver = "bob.mitchell@gmail.com";
         amount = BigDecimal.valueOf(56);
-        //transaction = new Transaction(sender, receiver, amount);
+        transaction = new Transaction(sender, receiver, amount);
     }
 
-/*    @Test
+    @Test
+    @Order(1)
     void testConstructor() {
         sender = "justin.mitchell@gmail.com";
         receiver = "bob.mitchell@gmail.com";
@@ -33,49 +34,47 @@ class TransactionTest {
         assertEquals("justin.mitchell@gmail.com", transaction.getSender());
         assertEquals("bob.mitchell@gmail.com", transaction.getReceiver());
         assertNotNull(transaction.getTime());
-    }*/
-
-    @Test
-    void getId() {
     }
 
     @Test
-    void setId() {
-    }
-
-/*    @Test
+    @Order(2)
     void getSender() {
         transaction.setSender(sender);
         assertEquals(sender, transaction.getSender());
-    }*/
+    }
 
-/*    @Test
+    @Test
+    @Order(3)
     void setSender() {
         String sender = "testaccount@gmail.com";
         transaction.setSender(sender);
         assertEquals(sender, transaction.getSender());
-    }*/
+    }
 
-/*    @Test
+    @Test
+    @Order(4)
     void getReceiver() {
         transaction.setReceiver(receiver);
         assertEquals(receiver, transaction.getReceiver());
     }
 
     @Test
+    @Order(5)
     void setReceiver() {
         String receiver = "testaccount2@gmail.com";
         transaction.setReceiver(receiver);
         assertEquals(receiver, transaction.getReceiver());
-    }*/
+    }
 
     @Test
+    @Order(6)
     void getAmount() {
         transaction.setAmount(amount);
         assertEquals(amount, transaction.getAmount());
     }
 
     @Test
+    @Order(7)
     void setAmount() {
         BigDecimal amountTest = BigDecimal.valueOf(101010106);
         transaction.setAmount(amountTest);
@@ -83,11 +82,13 @@ class TransactionTest {
     }
 
     @Test
+    @Order(8)
     void getTime() {
         assertNotNull(transaction.getTime());
     }
 
     @Test
+    @Order(9)
     void setTime() {
         Date date = new Date();
         transaction.setTime(date);
