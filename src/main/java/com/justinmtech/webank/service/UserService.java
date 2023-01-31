@@ -3,6 +3,8 @@ package com.justinmtech.webank.service;
 import com.justinmtech.webank.exceptions.user.UserAlreadyExistsError;
 import com.justinmtech.webank.exceptions.user.UserNotFoundError;
 import com.justinmtech.webank.model.User;
+import com.justinmtech.webank.registration.token.ConfirmationToken;
+import com.justinmtech.webank.registration.token.ConfirmationTokenService;
 import com.justinmtech.webank.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -11,8 +13,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -23,6 +27,9 @@ public class UserService {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ConfirmationTokenService confirmationTokenService;
 
     @Async
     public CompletableFuture<Optional<User>> getUser(String username) {
@@ -70,6 +77,7 @@ public class UserService {
             User user = new User(username, getPasswordEncoder().encode(password), firstName, lastName, phoneNumber);
             user.setBalance(BigDecimal.valueOf(100));
             userRepository.save(user);
+
             return CompletableFuture.completedFuture(user);
         } else {
             throw new UserAlreadyExistsError();
@@ -104,5 +112,9 @@ public class UserService {
 
     public BCryptPasswordEncoder getPasswordEncoder() {
         return passwordEncoder;
+    }
+
+    public ConfirmationTokenService getConfirmationTokenService() {
+        return confirmationTokenService;
     }
 }

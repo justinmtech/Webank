@@ -1,6 +1,9 @@
 package com.justinmtech.webank.controller;
 
+import com.justinmtech.webank.email.EmailService;
 import com.justinmtech.webank.model.User;
+import com.justinmtech.webank.registration.token.ConfirmationToken;
+import com.justinmtech.webank.registration.token.ConfirmationTokenService;
 import com.justinmtech.webank.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
@@ -20,6 +25,12 @@ public class IndexController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private ConfirmationTokenService confirmationTokenService;
 
     @RequestMapping("/")
     public String getIndexPage(Model model) {
@@ -42,18 +53,11 @@ public class IndexController {
         return CompletableFuture.completedFuture("dashboard");
     }
 
-    @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user, Model model) {
-        model.addAttribute("user", user);
-        try {
-            getUserService().createUser(user.getUsername(), user.getPassword(), user.getFirstName(), user.getLastName(), user.getPhoneNumber());
-            return "index";
-        } catch (Exception e) {
-            return "error-page";
-        }
-    }
-
     public UserService getUserService() {
         return userService;
+    }
+
+    public ConfirmationTokenService getConfirmationTokenService() {
+        return confirmationTokenService;
     }
 }

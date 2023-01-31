@@ -1,5 +1,6 @@
 package com.justinmtech.webank.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -18,18 +19,25 @@ public class User implements UserDetails {
 
     @Id
     private String username;
+    @Column(nullable = false)
     private String password;
+    @Column(nullable = false, columnDefinition = "decimal default 0")
     private BigDecimal balance;
+    @Column(nullable = false, columnDefinition = "varchar(255) default 'n/a'")
     private String firstName;
+    @Column(nullable = false, columnDefinition = "varchar(255) default 'n/a'")
     private String lastName;
+    @Column(nullable = false, columnDefinition = "varchar(255) default 'n/a'")
     private String phoneNumber;
+    @Column(nullable = false, columnDefinition = "integer default 0")
     private Role role;
+    @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean accountEnabled;
 
     public User() {
         this.balance = BigDecimal.ZERO;
         this.role = Role.USER;
-        this.accountEnabled = true;
+        this.accountEnabled = false;
     }
 
     public User(String username, String password, BigDecimal balance,
@@ -40,7 +48,7 @@ public class User implements UserDetails {
         this.balance = balance;
         setFirstName(firstName);
         setLastName(lastName);
-        this.phoneNumber = phoneNumber;
+        setPhoneNumber(phoneNumber);
         this.role = role;
         this.accountEnabled = accountEnabled;
     }
@@ -57,22 +65,22 @@ public class User implements UserDetails {
         } else {
             this.role = Role.USER;
         }
-        this.accountEnabled = true;
+        this.accountEnabled = false;
     }
 
     public User(String username, String password, String firstName, String lastName, String phoneNumber) {
         setUsername(username);
         this.password = password;
         this.balance = BigDecimal.ZERO;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
+        setFirstName(firstName);
+        setLastName(lastName);
+        setPhoneNumber(phoneNumber);
         if (username.equals("admin")) {
             this.role = Role.ADMIN;
         } else {
             this.role = Role.USER;
         }
-        this.accountEnabled = true;
+        this.accountEnabled = false;
 
     }
 
@@ -84,7 +92,7 @@ public class User implements UserDetails {
         this.lastName = "n/a";
         this.phoneNumber = "n/a";
         this.role = role;
-        this.accountEnabled = true;
+        this.accountEnabled = false;
     }
 
     public User(User user) {
