@@ -8,6 +8,6 @@ Features:
 - Dashboard for viewing your account, balance and recent transactions
 - Asynchronous database calls
 - Load testing
-- MVC testing
+- MVC mock testing
 - Repository testing
 - Spring service testing
