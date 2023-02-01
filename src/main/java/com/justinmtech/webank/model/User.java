@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +46,7 @@ public class User implements UserDetails {
                 Role role, boolean accountEnabled) {
         setUsername(username);
         this.password = password;
-        this.balance = balance;
+        setBalance(balance);
         setFirstName(firstName);
         setLastName(lastName);
         setPhoneNumber(phoneNumber);
@@ -56,7 +57,7 @@ public class User implements UserDetails {
     public User(String username, String password) {
         setUsername(username);
         this.password = password;
-        this.balance = BigDecimal.ZERO;
+        setBalance(BigDecimal.ZERO);
         this.firstName = "n/a";
         this.lastName = "n/a";
         this.phoneNumber = "n/a";
@@ -71,7 +72,7 @@ public class User implements UserDetails {
     public User(String username, String password, String firstName, String lastName, String phoneNumber) {
         setUsername(username);
         this.password = password;
-        this.balance = BigDecimal.ZERO;
+        setBalance(BigDecimal.ZERO);
         setFirstName(firstName);
         setLastName(lastName);
         setPhoneNumber(phoneNumber);
@@ -87,7 +88,7 @@ public class User implements UserDetails {
     public User(String username, String password, Role role) {
         setUsername(username);
         this.password = password;
-        this.balance = BigDecimal.ZERO;
+        setBalance(BigDecimal.ZERO);
         this.firstName = "n/a";
         this.lastName = "n/a";
         this.phoneNumber = "n/a";
@@ -123,11 +124,11 @@ public class User implements UserDetails {
     }
 
     public BigDecimal getBalance() {
-        return balance;
+        return balance.setScale(2, RoundingMode.UNNECESSARY);
     }
 
     public void setBalance(BigDecimal balance) {
-        this.balance = balance;
+        this.balance = balance.setScale(2, RoundingMode.UNNECESSARY);
     }
 
     public String getFirstName() {

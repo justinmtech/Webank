@@ -3,6 +3,7 @@ package com.justinmtech.webank.model;
 import org.junit.jupiter.api.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,7 +22,7 @@ class UserTest {
         User user = new User("test_acc  ", "%$(@$*@)(*@)(*C*CCCCj   a s JDJFD A X(X(");
         assertEquals("test_acc", user.getUsername());
         assertEquals("%$(@$*@)(*@)(*C*CCCCj   a s JDJFD A X(X(", user.getPassword());
-        assertEquals(BigDecimal.ZERO, user.getBalance());
+        assertEquals(BigDecimal.ZERO.setScale(2, RoundingMode.UNNECESSARY), user.getBalance());
         assertEquals("n/a", user.getFirstName());
         assertEquals("n/a", user.getLastName());
         assertEquals("n/a", user.getPhoneNumber());
@@ -62,26 +63,26 @@ class UserTest {
     void getBalance() {
         user.setBalance(BigDecimal.ZERO);
         BigDecimal balance = user.getBalance();
-        assertEquals(BigDecimal.ZERO, balance);
+        assertEquals(BigDecimal.ZERO.setScale(2, RoundingMode.UNNECESSARY), balance);
     }
 
     @Test
     @Order(7)
     void setBalance() {
         user.setBalance(BigDecimal.TEN);
-        assertEquals(BigDecimal.TEN, user.getBalance());
+        assertEquals(BigDecimal.TEN.setScale(2, RoundingMode.UNNECESSARY), user.getBalance());
         user.setBalance(BigDecimal.valueOf(10_000));
-        assertEquals(BigDecimal.valueOf(10_000), user.getBalance());
+        assertEquals(BigDecimal.valueOf(10_000).setScale(2, RoundingMode.UNNECESSARY), user.getBalance());
         user.setBalance(BigDecimal.valueOf(100_000));
-        assertEquals(BigDecimal.valueOf(100_000), user.getBalance());
+        assertEquals(BigDecimal.valueOf(100_000).setScale(2, RoundingMode.UNNECESSARY), user.getBalance());
         user.setBalance(BigDecimal.valueOf(1_000_000));
-        assertEquals(BigDecimal.valueOf(1_000_000), user.getBalance());
+        assertEquals(BigDecimal.valueOf(1_000_000).setScale(2, RoundingMode.UNNECESSARY), user.getBalance());
         user.setBalance(BigDecimal.valueOf(25_037));
-        assertEquals(BigDecimal.valueOf(25_037), user.getBalance());
+        assertEquals(BigDecimal.valueOf(25_037).setScale(2, RoundingMode.UNNECESSARY), user.getBalance());
         user.setBalance(BigDecimal.valueOf(10_000));
-        assertEquals(BigDecimal.valueOf(10_000), user.getBalance());
-        user.setBalance(BigDecimal.valueOf(1.01010109));
-        assertEquals(BigDecimal.valueOf(1.01010109), user.getBalance());
+        assertEquals(BigDecimal.valueOf(10_000).setScale(2, RoundingMode.UNNECESSARY), user.getBalance());
+        user.setBalance(BigDecimal.valueOf(1.01).setScale(2, RoundingMode.UNNECESSARY));
+        assertEquals(BigDecimal.valueOf(1.01), user.getBalance());
     }
 
     @Test

@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -68,7 +69,7 @@ class UserServiceTest {
     @Test
     @Order(4)
     void getUserBalance() throws UserNotFoundError {
-        assertEquals(BigDecimal.ZERO, userService.getUserBalance(user.getUsername()));
+        assertEquals(BigDecimal.ZERO.setScale(2, RoundingMode.UNNECESSARY), userService.getUserBalance(user.getUsername()));
     }
 
     @Test
@@ -81,10 +82,10 @@ class UserServiceTest {
     @Test
     @Order(6)
     void updateUser() throws UserNotFoundError {
-        user.setBalance(BigDecimal.valueOf(100));
-        assertEquals(BigDecimal.valueOf(100), user.getBalance());
+        user.setBalance(BigDecimal.valueOf(100).setScale(2, RoundingMode.UNNECESSARY));
+        assertEquals(BigDecimal.valueOf(100).setScale(2, RoundingMode.UNNECESSARY), user.getBalance());
         userService.updateUser(user).join();
-        assertEquals(BigDecimal.valueOf(100), userService.getUser(user.getUsername()).join().get().getBalance());
+        assertEquals(BigDecimal.valueOf(100).setScale(2, RoundingMode.UNNECESSARY), userService.getUser(user.getUsername()).join().get().getBalance());
     }
 
     @Test

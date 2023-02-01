@@ -3,6 +3,7 @@ package com.justinmtech.webank.model;
 import org.junit.jupiter.api.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,7 +19,7 @@ class TransactionTest {
     static void setup() {
         sender = "justin.mitchell@gmail.com";
         receiver = "bob.mitchell@gmail.com";
-        amount = BigDecimal.valueOf(56);
+        amount = BigDecimal.valueOf(56).setScale(2, RoundingMode.UNNECESSARY);
         transaction = new Transaction(sender, receiver, amount);
     }
 
@@ -76,7 +77,7 @@ class TransactionTest {
     @Test
     @Order(7)
     void setAmount() {
-        BigDecimal amountTest = BigDecimal.valueOf(101010106);
+        BigDecimal amountTest = BigDecimal.valueOf(101010106).setScale(2, RoundingMode.UNNECESSARY);
         transaction.setAmount(amountTest);
         assertEquals(amountTest, transaction.getAmount());
     }

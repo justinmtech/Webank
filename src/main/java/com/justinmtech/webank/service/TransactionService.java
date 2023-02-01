@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -86,11 +87,11 @@ public class TransactionService {
         }
 
         BigDecimal previousSenderBalance = getUserService().getUserBalance(senderUsername);
-        BigDecimal newSenderBalance = previousSenderBalance.subtract(transaction.getAmount());
+        BigDecimal newSenderBalance = previousSenderBalance.subtract(transaction.getAmount()).setScale(2, RoundingMode.UNNECESSARY);
         boolean senderBalanceUpdateSuccess = handleBalanceUpdate(senderUsername, newSenderBalance);
 
         BigDecimal previousReceiverBalance = getUserService().getUserBalance(receiverUsername);
-        BigDecimal newReceiverBalance = previousReceiverBalance.add(transaction.getAmount());
+        BigDecimal newReceiverBalance = previousReceiverBalance.add(transaction.getAmount()).setScale(2, RoundingMode.UNNECESSARY);
         boolean receiverBalanceUpdateSuccess = handleBalanceUpdate(receiverUsername, newReceiverBalance);
 
         //Revert balances if failure

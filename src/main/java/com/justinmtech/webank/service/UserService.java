@@ -69,6 +69,18 @@ public class UserService {
 
     @SuppressWarnings("UnusedReturnValue")
     @Async
+    public CompletableFuture<User> createUser(User user) throws UserAlreadyExistsError {
+        if (userRepository.findById(user.getUsername()).isEmpty()) {
+            user.setPassword(getPasswordEncoder().encode(user.getPassword()));
+            User savedUser = userRepository.save(user);
+            return CompletableFuture.completedFuture(savedUser);
+        } else {
+            throw new UserAlreadyExistsError();
+        }
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    @Async
     public CompletableFuture<User> createUser(String username, String password, String firstName, String lastName, String phoneNumber) throws UserAlreadyExistsError {
         if (userRepository.findById(username).isEmpty()) {
             User user = new User(username, getPasswordEncoder().encode(password), firstName, lastName, phoneNumber);

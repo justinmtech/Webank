@@ -3,6 +3,7 @@ package com.justinmtech.webank.model;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 @Entity
@@ -27,14 +28,14 @@ public class Transaction {
         this.id = id;
         this.sender = sender;
         this.receiver = receiver;
-        this.amount = amount;
+        setAmount(amount);
         this.time = time;
     }
 
     public Transaction(String sender, String receiver, BigDecimal amount) {
         this.sender = sender;
         this.receiver = receiver;
-        this.amount = amount;
+        setAmount(amount);
         this.time = new Date();
     }
 
@@ -67,7 +68,7 @@ public class Transaction {
     }
 
     public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+        this.amount = amount.setScale(2, RoundingMode.UNNECESSARY);
     }
 
     public Date getTime() {
