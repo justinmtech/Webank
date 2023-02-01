@@ -1,4 +1,4 @@
-package com.justinmtech.webank.registration.token;
+package com.justinmtech.webank.repository;
 
 import com.justinmtech.webank.model.ConfirmationToken;
 import com.justinmtech.webank.model.User;

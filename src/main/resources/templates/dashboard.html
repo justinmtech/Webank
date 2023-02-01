@@ -16,13 +16,13 @@
     <div id="user-dashboard">
         <table>
             <tr>
-                <td>Username |</td>
-                <td>First Name |</td>
-                <td>Last Name |</td>
-                <td>Phone |</td>
-                <td>Role</td>
-                <td>Balance |</td>
-                <td>Transactions</td>
+                <td>Username</td>
+                <td>| First Name</td>
+                <td>| Last Name</td>
+                <td>| Phone</td>
+                <td>| Role</td>
+                <td>| Balance</td>
+                <td>| Transactions</td>
             </tr>
             <tr>
                 <td th:text="${user.username}"></td>
@@ -30,7 +30,7 @@
                 <td th:text="${user.lastName}"></td>
                 <td th:text="${user.phoneNumber}"></td>
                 <td th:text="${user.role}"></td>
-                <td th:text="${user.balance}"></td>
+                <td th:text="'$' + ${user.balance}"></td>
                 <td th:text="${transactionsCount}"></td>
             </tr>
         </table>

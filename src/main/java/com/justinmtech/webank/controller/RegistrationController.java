@@ -47,6 +47,7 @@ public class RegistrationController {
             getEmailService().send(user.getUsername(), buildEmail(user.getFirstName(), link));
             return "index";
         } catch (Exception e) {
+            e.printStackTrace();
             return "error-page";
         }
     }

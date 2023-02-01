@@ -1,13 +1,11 @@
-package com.justinmtech.webank.registration.token;
+package com.justinmtech.webank.model;
 
-import com.justinmtech.webank.model.ConfirmationToken;
-import com.justinmtech.webank.model.User;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ConfirmationTokenTest {
