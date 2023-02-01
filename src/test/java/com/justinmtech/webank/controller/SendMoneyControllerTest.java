@@ -22,4 +22,5 @@ class SendMoneyControllerTest {
     public void contextLoads() throws Exception {
         assertThat(controller).isNotNull();
     }
+
 }
