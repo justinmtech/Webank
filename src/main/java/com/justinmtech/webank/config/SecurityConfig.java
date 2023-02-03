@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,12 +29,20 @@ public class SecurityConfig {
         return new WebankUserDetailsService();
     }
 
+/*    @Bean
+    public WebSecurity webSecurity(WebSecurity webSecurity) {
+            webSecurity
+                    .ignoring()
+                    .requestMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/img/**", "/icon/**");
+        return webSecurity;
+    }*/
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/register", "/error-page", "/", "/api/v1/**","/testload", "/register/**").permitAll()
+                .requestMatchers("/register", "/error-page", "/", "/api/v1/**","/testload", "/register/**", "/css/style.css").permitAll()
                 .and()
                 .authorizeHttpRequests().requestMatchers("/dashboard", "/send-money", "/money-sent").authenticated()
                 .and()

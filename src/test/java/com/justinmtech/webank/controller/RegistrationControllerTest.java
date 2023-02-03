@@ -51,7 +51,7 @@ class RegistrationControllerTest {
                         .param("lastName", lastName)
                         .param("phoneNumber", phoneNumber))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string(containsString("Welcome to Webank.")));
+                .andExpect(MockMvcResultMatchers.content().string(containsString("A verification has been sent to your email.")));
         Optional<User> user = userRepository.findByUsername(username);
         assertTrue(user.isPresent());
         assertFalse(user.get().isEnabled());

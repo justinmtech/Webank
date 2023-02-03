@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Error</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
 </head>
 <body>
     <nav>
@@ -11,6 +12,12 @@
         <a href="http://localhost:2053/send-money">Send Money</a>
     </nav>
 
-    <h1>Something went wrong..</h1>
+    <div class="content-wrapper">
+        <div class="content">
+            <h1>Error!</h1>
+            <p>Something went wrong..</p>
+        </div>
+    </div>
+
 </body>
 </html>

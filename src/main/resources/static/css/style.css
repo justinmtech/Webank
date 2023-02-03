@@ -1,0 +1,52 @@
+body {
+    color: #2F469B;
+    font: open-sans;
+}
+
+table, th, td {
+  border: 1px solid darkgray;
+  width: 100%;
+}
+
+.log {
+  color: #2F469B;
+  background-color: lightgray;
+  border: 1px #2F469B;
+}
+
+button:hover {
+  color: white;
+  background-color: rgba(104, 85, 224, 1);
+}
+
+nav a {
+    text-decoration: none;
+    color: #2F469B;
+    text-transform: capitalize;
+}
+
+button {
+    cursor: pointer;
+    border: 0;
+    border-radius: 4px;
+    font-weight: 600;
+    margin: 0 10px;
+    width: 200px;
+    padding: 10px 0;
+    color: #2F469B;
+    border: 1px solid #2F469B;
+
+    transition: 0.2s;
+  }
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.content-wrapper {
+    display: flex;  
+    justify-content: center;  
+    align-items: center; 
+    text-align: center;
+    width: 100%;
+}

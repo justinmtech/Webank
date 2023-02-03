@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
 </head>
 <body>
     <nav>
@@ -11,53 +12,73 @@
         <a href="http://localhost:2053/send-money">Send Money</a>
     </nav>
 
-    <h1>Dashboard</h1>
+    <div class="content-wrapper">
 
-    <div id="user-dashboard">
-        <table>
-            <tr>
-                <td>Username</td>
-                <td>| First Name</td>
-                <td>| Last Name</td>
-                <td>| Phone</td>
-                <td>| Role</td>
-                <td>| Balance</td>
-                <td>| Transactions</td>
-            </tr>
-            <tr>
-                <td th:text="${user.username}"></td>
-                <td th:text="${user.firstName}"></td>
-                <td th:text="${user.lastName}"></td>
-                <td th:text="${user.phoneNumber}"></td>
-                <td th:text="${user.role}"></td>
-                <td th:text="'$' + ${user.balance}"></td>
-                <td th:text="${transactionsCount}"></td>
-            </tr>
-        </table>
+        <div class="content">
+            <h1>Dashboard</h1>
+
+            <div id="user-dashboard">
+                <table>
+                    <tr>
+                        <td>Username</td>
+                        <td>First Name</td>
+                        <td>Last Name</td>
+                        <td>Phone</td>
+                        <td>Role</td>
+                        <td>Balance</td>
+                        <td>Transactions</td>
+                    </tr>
+                    <tr>
+                        <td th:text="${user.username}"></td>
+                        <td th:text="${user.firstName}"></td>
+                        <td th:text="${user.lastName}"></td>
+                        <td th:text="${user.phoneNumber}"></td>
+                        <td th:text="${user.role}"></td>
+                        <td th:text="'$' + ${user.balance}"></td>
+                        <td th:text="${transactionsCount}"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="all-transactions">
+                <h2>Transactions</h2>
+                <table>
+                    <tr>
+                        <td>Transaction ID</td>
+                        <td>Sender</td>
+                        <td>Receiver</td>
+                        <td>Amount</td>
+                        <td>Time</td>
+                    </tr>
+                    <tr th:each="transaction: ${transactions}">
+                        <td th:text="${transaction.id}"></td>
+                        <td th:text="${transaction.sender}"></td>
+                        <td th:text="${transaction.receiver}"></td>
+                        <td th:text="${transaction.amount}"></td>
+                        <td th:text="${transaction.time}"></td>
+                    </tr>
+                </table>
+            </div>
+            <form th:action="@{/logout}" method="post">
+                <button class="reg" type="submit" value="Sign Out">Logout</button>
+            </form>
+        </div>
     </div>
 
-    <div id="all-transactions">
-        <h2>Transactions</h2>
-        <table>
-            <tr>
-                <td>Transaction ID |</td>
-                <td>Sender |</td>
-                <td>Receiver |</td>
-                <td>Amount |</td>
-                <td>Time</td>
-            </tr>
-            <tr th:each="transaction: ${transactions}">
-                <td th:text="${transaction.id}"></td>
-                <td th:text="${transaction.sender}"></td>
-                <td th:text="${transaction.receiver}"></td>
-                <td th:text="${transaction.amount}"></td>
-                <td th:text="${transaction.time}"></td>
-            </tr>
-        </table>
-    </div>
 
-    <form th:action="@{/logout}" method="post">
-        <input type="submit" value="Sign Out"/>
-    </form>
+    <script th:inline="javascript">
+
+      /*<![CDATA[*/
+
+         var transactionsCount = /*[[${transactionsCount}]]*/ '0';
+
+       /*]]>*/
+
+       if (transactionsCount == 0) {
+            let transactionsElement = document.getElementById('all-transactions');
+            transactionsElement.remove();
+       }
+    </script>
+
 </body>
 </html>

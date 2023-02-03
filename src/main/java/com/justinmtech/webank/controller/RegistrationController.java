@@ -45,7 +45,7 @@ public class RegistrationController {
 
             String link = "http://localhost:2053/register/" + token;
             getEmailService().send(user.getUsername(), buildEmail(user.getFirstName(), link));
-            return "index";
+            return "account-confirmation";
         } catch (Exception e) {
             e.printStackTrace();
             return "error-page";
@@ -133,7 +133,7 @@ public class RegistrationController {
                         getUserService().updateUser(fetchedUser.get());
                         model.addAttribute("user", new User());
                         getConfirmationTokenService().deleteToken(token);
-                        return "index";
+                        return "registration-complete";
                     } catch (Exception ignored) {
                         return "error-page";
                     }
