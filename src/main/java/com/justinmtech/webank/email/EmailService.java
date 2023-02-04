@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Properties;
 
-//TODO PUT PROPERTIES IN LOCAL FILE
 @Service
 public class EmailService implements EmailSender {
 
