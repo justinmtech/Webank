@@ -19,7 +19,7 @@ public class DashboardController {
     private UserService userService;
 
     @Autowired
-    TransactionService transactionService;
+    private TransactionService transactionService;
 
     @RequestMapping("/dashboard")
     public String getDashboard(Model model) {

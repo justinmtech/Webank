@@ -27,7 +27,7 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Async
     public CompletableFuture<Optional<Transaction>> getTransactionById(Long id) {
