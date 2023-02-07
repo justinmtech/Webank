@@ -57,16 +57,8 @@ public class EmailService implements EmailSender {
     public JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setJavaMailProperties(getProperties());
-        if (username.equalsIgnoreCase("email")) {
-            mailSender.setUsername(environment.getProperty("SPRING_MAIL_USERNAME"));
-        } else {
-            mailSender.setUsername(username);
-        }
-        if (password.equalsIgnoreCase("password")) {
-            mailSender.setPassword(environment.getProperty("SPRING_MAIL_PASSWORD"));
-        } else {
-            mailSender.setPassword(password);
-        }
+        mailSender.setUsername(username.equals("email") ? environment.getProperty("SPRING_MAIL_USERNAME") : username);
+        mailSender.setPassword(password.equals("password") ? environment.getProperty("SPRING_MAIL_PASSWORD") : password);
         mailSender.setDefaultEncoding("UTF-8");
 
         return mailSender;
