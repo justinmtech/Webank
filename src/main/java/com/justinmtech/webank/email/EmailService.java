@@ -5,8 +5,10 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -30,6 +32,9 @@ public class EmailService implements EmailSender {
     @Value("spring.mail.properties.mail.smtp.starttls.enable")
     private String tls;
 
+    @Autowired
+    private Environment environment;
+
     private final static Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
     @Override
@@ -52,8 +57,16 @@ public class EmailService implements EmailSender {
     public JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setJavaMailProperties(getProperties());
-        mailSender.setUsername(getUsername());
-        mailSender.setPassword(getPassword());
+        if (username.equalsIgnoreCase("email")) {
+            mailSender.setUsername(environment.getProperty("SPRING_MAIL_USERNAME"));
+        } else {
+            mailSender.setUsername(username);
+        }
+        if (password.equalsIgnoreCase("password")) {
+            mailSender.setPassword(environment.getProperty("SPRING_MAIL_PASSWORD"));
+        } else {
+            mailSender.setPassword(password);
+        }
         mailSender.setDefaultEncoding("UTF-8");
 
         return mailSender;
