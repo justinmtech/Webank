@@ -1,13 +1,11 @@
 package com.justinmtech.webank.service;
 
-import com.justinmtech.webank.exceptions.transaction.BalanceNotUpdatedError;
-import com.justinmtech.webank.exceptions.transaction.InsufficientFundsError;
-import com.justinmtech.webank.exceptions.transaction.TransactionAccountNotFound;
-import com.justinmtech.webank.exceptions.transaction.TransactionMember;
+import com.justinmtech.webank.exceptions.transaction.*;
 import com.justinmtech.webank.exceptions.user.UserNotFoundError;
 import com.justinmtech.webank.model.Transaction;
 import com.justinmtech.webank.model.User;
 import com.justinmtech.webank.repository.TransactionRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Create and resolve transactions between users
@@ -32,41 +29,69 @@ public class TransactionService {
     @Autowired
     private UserService userService;
 
+    /**
+     * @param id Identifier of the transaction
+     * @return A transaction as an optional completable future
+     */
     @Async
     public CompletableFuture<Optional<Transaction>> getTransactionById(Long id) {
         return CompletableFuture.completedFuture(getTransactionRepository().findById(id));
     }
 
+    /**
+     * @return A list of all transactions
+     */
     @Async
     public CompletableFuture<List<Transaction>> getAll() {
         List<Transaction> transactions = getTransactionRepository().findAll();
         return CompletableFuture.completedFuture(transactions);
     }
 
+    /**
+     * @param username Username of the account
+     * @return A list of transactions sent by a user
+     */
     @Async
-    public CompletableFuture<List<Transaction>> getTransactionsBySender(String username) {
+    public CompletableFuture<List<Transaction>> getTransactionsBySender(@NotNull String username) {
         List<Transaction> transactions = getTransactionRepository().findBySender(username);
         return CompletableFuture.completedFuture(transactions);
     }
 
+    /**
+     * @param username Username of the account
+     * @return A list of transactions received by a user
+     */
     @Async
-    public CompletableFuture<List<Transaction>> getTransactionsByReceiver(String username) {
+    public CompletableFuture<List<Transaction>> getTransactionsByReceiver(@NotNull String username) {
         List<Transaction> transactions = getTransactionRepository().findByReceiver(username);
         return CompletableFuture.completedFuture(transactions);
     }
 
+    /**
+     * @param username The account's username
+     * @return A list of all transactions a user is involved in
+     */
     @Async
-    public CompletableFuture<List<Transaction>> getAllTransactionsByUsername(String username) throws ExecutionException, InterruptedException {
-        List<Transaction> transactions = new ArrayList<>();
-        transactions.addAll(getTransactionsBySender(username).get());
-        transactions.addAll(getTransactionsByReceiver(username).get());
+    public CompletableFuture<List<Transaction>> getAllTransactionsByUsername(@NotNull String username) {
+        List<Transaction> transactionsBySender = getTransactionsBySender(username).join();
+        List<Transaction> transactions = new ArrayList<>(transactionsBySender);
+        List<Transaction> transactionsByReceiver = getTransactionsByReceiver(username).join();
+        transactions.addAll(transactionsByReceiver);
         return CompletableFuture.completedFuture(transactions);
     }
 
-
+    /**
+     * @param from Username the transaction is from
+     * @param to Username the transaction is to
+     * @param amount Value of the transaction
+     * @return The transaction as a completable future
+     * @throws TransactionAccountNotFound At least one username was not found
+     * @throws TransactionAmountZeroError The transaction was equal to zero
+     */
     @SuppressWarnings("UnusedReturnValue")
     @Async
-    private CompletableFuture<Transaction> createNewTransaction(String from, String to, BigDecimal amount) throws TransactionAccountNotFound {
+    private CompletableFuture<Transaction> createNewTransaction(@NotNull String from, @NotNull String to, BigDecimal amount) throws TransactionAccountNotFound, TransactionAmountZeroError {
+        if (amount.equals(BigDecimal.ZERO)) throw new TransactionAmountZeroError();
         Transaction transaction = new Transaction(from, to, amount);
         if (!getUserService().userExists(from)) throw new TransactionAccountNotFound(TransactionMember.SENDER, from);
         if (!getUserService().userExists(to)) throw new TransactionAccountNotFound(TransactionMember.RECEIVER, to);
@@ -74,8 +99,13 @@ public class TransactionService {
         return CompletableFuture.completedFuture(transactionSaved);
     }
 
+    /**
+     * @param transaction Transaction object
+     * @return True if successful and false if not
+     * @throws Exception If a user is not found or if the sender has insufficient funds
+     */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean handleTransaction(Transaction transaction) throws Exception {
+    public boolean handleTransaction(@NotNull Transaction transaction) throws Exception {
         String receiverUsername = transaction.getReceiver();
         String senderUsername = transaction.getSender();
 
