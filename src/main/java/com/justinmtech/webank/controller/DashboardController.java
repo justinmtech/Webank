@@ -25,13 +25,10 @@ public class DashboardController {
     public String getDashboard(Model model) {
         User user = getUserService().getCurrentAuthenticatedUser();
         model.addAttribute("user", user);
-        try {
-            List<Transaction> transactionList = getTransactionService().getAllTransactionsByUsername(user.getUsername()).join();
-            model.addAttribute("transactions", transactionList);
-            model.addAttribute("transactionsCount", transactionList.size());
-        } catch (ExecutionException | InterruptedException e) {
-            return "error-page";
-        }
+        List<Transaction> transactionList = getTransactionService().getAllTransactionsByUsername(user.getUsername()).join();
+        if (transactionList == null) return "error-page";
+        model.addAttribute("transactions", transactionList);
+        model.addAttribute("transactionsCount", transactionList.size());
 
         return "dashboard";
     }
