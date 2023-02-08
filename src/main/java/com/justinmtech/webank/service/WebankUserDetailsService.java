@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Obtain and map User objects to UserDetails objects
+ */
 @Service
 public class WebankUserDetailsService implements UserDetailsService {
 

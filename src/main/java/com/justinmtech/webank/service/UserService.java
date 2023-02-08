@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Create, fetch and update users
+ */
 @Service
 public class UserService {
 

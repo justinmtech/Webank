@@ -6,6 +6,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 
+/**
+ * Holds transaction data such as id, sender, receiver, amount and time.
+ */
 @Entity
 @Table(name = "webank_transaction")
 public class Transaction {

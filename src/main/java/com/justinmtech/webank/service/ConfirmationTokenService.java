@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+/**
+ * Create, save and fetch ConfirmationToken objects from the JPA repository
+ */
 @SuppressWarnings("UnusedReturnValue")
 @Service
 public class ConfirmationTokenService {

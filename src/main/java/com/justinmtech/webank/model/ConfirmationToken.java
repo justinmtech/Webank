@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Unique email confirmation tokens for determining if an account's email has been validated
+ */
 @Entity
 @Table(name = "webank_confirmation_token")
 public class ConfirmationToken {

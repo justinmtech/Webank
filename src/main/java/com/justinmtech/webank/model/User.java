@@ -13,6 +13,9 @@ import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * The container of user account data
+ */
 @Entity
 @Table(name = "webank_user")
 public class User implements UserDetails {

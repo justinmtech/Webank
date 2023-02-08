@@ -20,6 +20,9 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Create and resolve transactions between users
+ */
 @Service
 public class TransactionService {
 

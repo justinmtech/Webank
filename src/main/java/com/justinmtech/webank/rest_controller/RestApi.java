@@ -14,6 +14,9 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * A RESTful API for obtaining data through web requests
+ */
 //TODO Setup security/permissions
 @RestController
 public class RestApi {

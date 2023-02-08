@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Properties;
 
+/**
+ * Enable sending and receiving emails
+ */
 @Service
 public class EmailService implements EmailSender {
 
