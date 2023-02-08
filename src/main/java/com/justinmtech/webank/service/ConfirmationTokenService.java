@@ -46,7 +46,7 @@ public class ConfirmationTokenService {
         return getConfirmationTokenRepository().deleteByToken(tokenId);
     }
 
-    public ConfirmationTokenRepository getConfirmationTokenRepository() {
+    private ConfirmationTokenRepository getConfirmationTokenRepository() {
         return confirmationTokenRepository;
     }
 }

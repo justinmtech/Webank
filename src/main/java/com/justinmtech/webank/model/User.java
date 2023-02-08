@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,76 +39,73 @@ public class User implements UserDetails {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean accountEnabled;
 
+    private final static BigDecimal DEFAULT_BALANCE = BigDecimal.valueOf(50);
+    private final static String EMPTY_FIELD = "n/a";
+    private final static String ADMIN_USERNAME = "admin";
+
     public User() {
-        this.balance = BigDecimal.ZERO;
-        this.role = Role.USER;
-        this.accountEnabled = false;
+        setBalance(DEFAULT_BALANCE);
+        setRole(Role.USER);
+        setRole(Role.USER);
+        setAccountEnabled(false);
     }
 
-    public User(String username, String password, BigDecimal balance,
-                String firstName, String lastName, String phoneNumber,
-                Role role, boolean accountEnabled) {
+    public User(@NotNull String username, @NotNull String password, @NotNull BigDecimal balance,
+                @Nullable String firstName, @Nullable String lastName, @Nullable String phoneNumber,
+                @Nullable Role role, boolean accountEnabled) {
         setUsername(username);
-        this.password = password;
+        setPassword(password);
         setBalance(balance);
-        setFirstName(firstName);
-        setLastName(lastName);
-        setPhoneNumber(phoneNumber);
-        this.role = role;
-        this.accountEnabled = accountEnabled;
+        setFirstName(firstName != null ? firstName : EMPTY_FIELD);
+        setLastName(lastName != null ? lastName : EMPTY_FIELD);
+        setPhoneNumber(phoneNumber != null ? phoneNumber : EMPTY_FIELD);
+        setRole(role != null ? role : Role.USER);
+        setAccountEnabled(accountEnabled);
     }
 
-    public User(String username, String password) {
+    public User(@NotNull String username, @NotNull String password) {
         setUsername(username);
-        this.password = password;
+        setPassword(password);
         setBalance(BigDecimal.ZERO);
-        this.firstName = "n/a";
-        this.lastName = "n/a";
-        this.phoneNumber = "n/a";
-        if (username.equals("admin")) {
-            this.role = Role.ADMIN;
-        } else {
-            this.role = Role.USER;
-        }
-        this.accountEnabled = false;
+        setFirstName(EMPTY_FIELD);
+        setLastName(EMPTY_FIELD);
+        setPhoneNumber(EMPTY_FIELD);
+        setRole(username.equals(ADMIN_USERNAME) ? this.role = Role.ADMIN : Role.USER);
+        setAccountEnabled(false);
     }
 
-    public User(String username, String password, String firstName, String lastName, String phoneNumber) {
+    public User(@NotNull String username, @NotNull String password, @Nullable String firstName, @Nullable String lastName, @Nullable String phoneNumber) {
         setUsername(username);
-        this.password = password;
-        setBalance(BigDecimal.ZERO);
-        setFirstName(firstName);
-        setLastName(lastName);
-        setPhoneNumber(phoneNumber);
-        if (username.equals("admin")) {
-            this.role = Role.ADMIN;
-        } else {
-            this.role = Role.USER;
-        }
-        this.accountEnabled = false;
+        setPassword(password);
+        setBalance(DEFAULT_BALANCE);
+        setFirstName(firstName != null ? firstName : EMPTY_FIELD);
+        setLastName(lastName != null ? lastName : EMPTY_FIELD);
+        setPhoneNumber(phoneNumber != null ? phoneNumber : EMPTY_FIELD);
+        setRole(username.equals(ADMIN_USERNAME) ? this.role = Role.ADMIN : Role.USER);
+        setAccountEnabled(false);
 
     }
 
     public User(String username, String password, Role role) {
         setUsername(username);
-        this.password = password;
-        setBalance(BigDecimal.ZERO);
-        this.firstName = "n/a";
-        this.lastName = "n/a";
-        this.phoneNumber = "n/a";
-        this.role = role;
-        this.accountEnabled = false;
+        setPassword(password);
+        setBalance(DEFAULT_BALANCE);
+        setFirstName(EMPTY_FIELD);
+        setLastName(EMPTY_FIELD);
+        setPhoneNumber(EMPTY_FIELD);
+        setRole(role);
+        setAccountEnabled(false);
     }
 
     public User(User user) {
-        this.username = user.getUsername();
-        this.password = user.getPassword();
-        this.balance = user.getBalance();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.phoneNumber = user.getPhoneNumber();
-        this.role = user.getRole();
-        this.accountEnabled = user.isEnabled();
+        setUsername(user.getUsername());
+        setPassword(user.getPassword());
+        setBalance(user.getBalance());
+        setFirstName(user.getFirstName());
+        setLastName(user.getLastName());
+        setPhoneNumber(user.getPhoneNumber());
+        setRole(user.getRole());
+        setAccountEnabled(user.isEnabled());
     }
 
     public String getUsername() {
@@ -162,7 +161,7 @@ public class User implements UserDetails {
     }
 
     public Role getRole() {
-        return role;
+        return role != null ? this.role : Role.USER;
     }
 
     public void setRole(Role role) {
@@ -191,11 +190,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (getRole() == Role.ADMIN) {
-            return Collections.singleton(new SimpleGrantedAuthority(Role.ADMIN.name()));
-        } else {
-            return Collections.singleton(new SimpleGrantedAuthority(Role.USER.name()));
-        }
+        return Collections.singleton(new SimpleGrantedAuthority(getRole().name()));
     }
 
     public void setAccountEnabled(boolean accountEnabled) {

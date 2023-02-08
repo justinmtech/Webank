@@ -27,31 +27,45 @@ public class RestApi {
     @Autowired
     private TransactionService transactionService;
 
+    /**
+     * @param username User id of the account
+     * @return Optional User object as a completable future
+     */
     @GetMapping("/api/v1/getUser/{username}")
     public CompletableFuture<Optional<User>> getUser(@PathVariable(name = "username") String username) {
         return getUserService().getUser(username);
     }
 
+    /**
+     * @return List of all users as a completable future
+     */
     @GetMapping("/api/v1/getUsers")
     public CompletableFuture<List<User>> getUsers() {
         return getUserService().getUsers();
     }
 
+    /**
+     * @return List of all transactions as a completable future
+     */
     @GetMapping("/api/v1/getTransactions")
     public CompletableFuture<List<Transaction>> getTransactions() {
         return getTransactionService().getAll();
     }
 
+    /**
+     * @param username User id to search for
+     * @return List of transactions the user was involved in
+     */
     @GetMapping("/api/v1/getTransactions/{username}")
-    public CompletableFuture<List<Transaction>> getTransactions(@PathVariable(value = "username") String username) throws ExecutionException, InterruptedException {
+    public CompletableFuture<List<Transaction>> getTransactions(@PathVariable(value = "username") String username) {
         return getTransactionService().getAllTransactionsByUsername(username);
     }
 
-    public UserService getUserService() {
+    private UserService getUserService() {
         return userService;
     }
 
-    public TransactionService getTransactionService() {
+    private TransactionService getTransactionService() {
         return transactionService;
     }
 }
