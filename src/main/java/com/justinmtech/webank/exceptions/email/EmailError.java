@@ -7,4 +7,8 @@ public class EmailError extends Exception {
         super("Email could not be sent to '" + to + "' from " + from);
         setStackTrace(e.getStackTrace());
     }
+    public EmailError(String to, MessagingException e) {
+        super("Email could not be sent to '" + to + "'");
+        setStackTrace(e.getStackTrace());
+    }
 }

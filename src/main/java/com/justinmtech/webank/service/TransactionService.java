@@ -150,7 +150,7 @@ public class TransactionService {
         return !userHasEnoughFunds(transaction.getSender(), transaction.getAmount());
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @SuppressWarnings({"OptionalGetWithoutIsPresent", "SameReturnValue"})
     private boolean setBalance(String username, BigDecimal amount) throws UserNotFoundError, BalanceNotUpdatedError {
         if (getUserService().userExists(username)) {
             User user = getUserService().getUser(username).join().get();

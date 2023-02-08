@@ -27,7 +27,7 @@ class IndexControllerTest {
     private IndexController controller;
 
     @Test
-    public void contextLoads() throws Exception {
+    public void contextLoads() {
         assertThat(controller).isNotNull();
     }
 

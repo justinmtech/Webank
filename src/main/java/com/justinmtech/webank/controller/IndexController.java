@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("SameReturnValue")
 @Controller
 public class IndexController {
 
