@@ -1,8 +1,6 @@
 package com.justinmtech.webank.controller;
 
-import com.justinmtech.webank.email.EmailService;
 import com.justinmtech.webank.model.User;
-import com.justinmtech.webank.service.ConfirmationTokenService;
 import com.justinmtech.webank.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -17,12 +15,6 @@ public class IndexController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private ConfirmationTokenService confirmationTokenService;
 
     @RequestMapping("/")
     public String getIndexPage(Model model) {
@@ -45,11 +37,8 @@ public class IndexController {
         return CompletableFuture.completedFuture("dashboard");
     }
 
-    public UserService getUserService() {
+    private UserService getUserService() {
         return userService;
     }
 
-    public ConfirmationTokenService getConfirmationTokenService() {
-        return confirmationTokenService;
-    }
 }

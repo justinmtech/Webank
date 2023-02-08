@@ -43,11 +43,11 @@ public class SendMoneyController {
         return "money-sent";
     }
 
-    public UserService getUserService() {
+    private UserService getUserService() {
         return userService;
     }
 
-    public TransactionService getTransactionService() {
+    private TransactionService getTransactionService() {
         return transactionService;
     }
 }

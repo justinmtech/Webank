@@ -10,7 +10,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @Controller
 public class DashboardController {
@@ -33,11 +32,11 @@ public class DashboardController {
         return "dashboard";
     }
 
-    public UserService getUserService() {
+    private UserService getUserService() {
         return userService;
     }
 
-    public TransactionService getTransactionService() {
+    private TransactionService getTransactionService() {
         return transactionService;
     }
 }

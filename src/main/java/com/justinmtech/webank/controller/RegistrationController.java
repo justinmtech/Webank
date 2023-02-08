@@ -1,10 +1,9 @@
 package com.justinmtech.webank.controller;
 
 import com.justinmtech.webank.email.EmailService;
-import com.justinmtech.webank.model.User;
 import com.justinmtech.webank.model.ConfirmationToken;
+import com.justinmtech.webank.model.User;
 import com.justinmtech.webank.service.ConfirmationTokenService;
-import com.justinmtech.webank.service.TransactionService;
 import com.justinmtech.webank.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,9 +27,6 @@ public class RegistrationController {
     private UserService userService;
 
     @Autowired
-    private TransactionService transactionService;
-
-    @Autowired
     private EmailService emailService;
 
     @PostMapping("/register")
@@ -50,6 +46,27 @@ public class RegistrationController {
             e.printStackTrace();
             return "error-page";
         }
+    }
+
+    @RequestMapping("/register/{token}")
+    public String tryConfirmToken(@PathVariable(name = "token") String token, Model model) {
+        Optional<ConfirmationToken> confirmationToken = getConfirmationTokenService().getToken(token);
+        if (confirmationToken.isPresent()) {
+            String username = confirmationToken.get().getUser().getUsername();
+            Optional<User> fetchedUser = getUserService().getUser(username).join();
+                if (fetchedUser.isPresent()) {
+                    fetchedUser.get().setAccountEnabled(true);
+                    try {
+                        getUserService().updateUser(fetchedUser.get());
+                        model.addAttribute("user", new User());
+                        getConfirmationTokenService().deleteToken(token);
+                        return "registration-complete";
+                    } catch (Exception ignored) {
+                        return "error-page";
+                    }
+                }
+        }
+        return "error-page";
     }
 
     private String buildEmail(String name, String link) {
@@ -121,37 +138,12 @@ public class RegistrationController {
                 "</div></div>";
     }
 
-    @RequestMapping("/register/{token}")
-    public String tryConfirmToken(@PathVariable(name = "token") String token, Model model) {
-        Optional<ConfirmationToken> confirmationToken = getConfirmationTokenService().getToken(token);
-        if (confirmationToken.isPresent()) {
-            String username = confirmationToken.get().getUser().getUsername();
-            Optional<User> fetchedUser = getUserService().getUser(username).join();
-                if (fetchedUser.isPresent()) {
-                    fetchedUser.get().setAccountEnabled(true);
-                    try {
-                        getUserService().updateUser(fetchedUser.get());
-                        model.addAttribute("user", new User());
-                        getConfirmationTokenService().deleteToken(token);
-                        return "registration-complete";
-                    } catch (Exception ignored) {
-                        return "error-page";
-                    }
-                }
-        }
-        return "error-page";
-    }
-
     private ConfirmationTokenService getConfirmationTokenService() {
         return confirmationTokenService;
     }
 
     private UserService getUserService() {
         return userService;
-    }
-
-    private TransactionService getTransactionService() {
-        return transactionService;
     }
 
     private EmailService getEmailService() {
